@@ -51,6 +51,8 @@ function Row(props) {
 
   let pixels = [];
 
+
+
   for (let i = 0; i < width; i++) {
     pixels.push(<Pixel key={i} selectedColor={selectedColor} />);
   }
@@ -59,21 +61,48 @@ function Row(props) {
 }
 
 function DrawingPanel({ selectedColor }) {
+  const [pixelColors, setPixelColors] = useState()
+
   const width = 32;
   const height = 32;
 
-  const panelRef = useRef();
+  const rows = [...Array(height).keys()]
+  const cols = [...Array(width).keys()]
 
-  let rows = [];
+  const setColor = (rowId, colId, color) => {
+    setPixelColors(prevState => _.merge({}, prevState, { [rowId]: { [colId]: { color } } }))
+  }
 
-  for (let i = 0; i < height; i++) {
-    rows.push(<Row key={i} width={width} selectedColor={selectedColor} />);
+  const handleHover = (rowId, colId, color) => {
+    setPixelColors(prevState => _.merge({}, prevState, { [rowId]: { [colId]: { hoverColor: color } } }))
+  }
+
+  const handleHoverExit = (rowId, colId) => {
+    setPixelColors(prevState => _.merge({}, prevState, { [rowId]: { [colId]: { hoverColor: null } } }))
   }
 
   return (
     <div className="flex flex-col items-center">
-      <div ref={panelRef}>
-        {rows}
+      <div>
+        {rows.map(rowId => (
+          <div key={`col-${rowId}`} className="flex fit-content">
+            {cols.map(colId => {
+              const pixel = pixelColors?.[rowId]?.[colId] || {}
+              const color = pixel.hoverColor || pixel.color || null
+              const style = color ? {backgroundColor: color} : {}
+              return (
+                <div
+                  key={`pixel-${rowId}-${colId}`}
+                  className="w-4 h-4 hover:cursor-pointer"
+                  onClick={setColor(rowId, colId, selectedColor)}
+                  onMouseEnter={handleHover(rowId, colId, selectedColor)}
+                  onMouseLeave={handleHoverExit(rowId, colId)}
+                  style={style}
+                />
+              )
+            })}
+          </div>
+        ))}
       </div>
     </div>
   );
@@ -97,7 +126,7 @@ export default function Draw() {
 
           <div className="flex flex-col gap-8 items-center">
             <CirclePicker colors={COLORS} color={selectedColor} onChangeComplete={changeColor} />
-            <button onClick={() => changeColor({hex: "#ffffff00"})}>
+            <button onClick={() => changeColor({ hex: "#ffffff00" })}>
               <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
               </svg>
