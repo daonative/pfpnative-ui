@@ -1,9 +1,11 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Head from 'next/head';
 import Image from 'next/image';
 import styles from '../styles/Home.module.css';
 import { useForm } from 'react-hook-form';
 import data from '../assets/image-data.json'
+import { buildSVG } from '@nouns/sdk';
+import ImageData from "../assets/image-data.json";
 
 import { useEtherBalance, useEthers, Config, useContractFunction } from '@usedapp/core';
 
@@ -82,6 +84,23 @@ export const CardSelect = ({ label }) => {
   );
 };
 
+const Preview = ({ parts }) => {
+  const { bgcolors, palette } = ImageData;
+  const svg = buildSVG(parts, palette, bgcolors[0])
+  const encodedSvgData = `data:image/svg+xml;base64,${btoa(svg)}`
+  return <img src={encodedSvgData} />
+}
+
+const PreviewExample = () => {
+  const { images } = ImageData;
+  const parts = [
+    images.bodies[2],
+    images.heads[1]
+  ]
+
+  return <Preview parts={parts} />
+}
+
 const Connect = () => {
   const { activateBrowserWallet, account } = useEthers();
 
@@ -116,7 +135,7 @@ const CreatorForm = () => {
 
   const createPFPContract = (bodies, heads, name) => {
     contract.on('PFPCollectionCreated', (event) => {
-      router.push(`/pfp/${event}`)
+      router.push(`/ pfp / ${ event }`)
     })
     send("PFPNative",
       name,
@@ -188,7 +207,7 @@ export default function Home() {
             <div>
               <h2>preview</h2>
               <div className="w-[300px] h-[300px] flex justify-center items-center bg-white rounded-lg shadow divide-y divide-x divide-gray-200 cursor-pointer">
-                image
+                <PreviewExample />
               </div>
             </div>
           </div>
