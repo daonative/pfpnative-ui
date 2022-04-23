@@ -4,6 +4,10 @@ import Image from 'next/image';
 import styles from '../styles/Home.module.css';
 import { useForm } from 'react-hook-form';
 
+import { useEtherBalance, useEthers, Config } from '@usedapp/core';
+
+import { formatEther } from '@ethersproject/units';
+
 export const Input = ({ label, name, register, required, placeholder }) => {
   return (
     <div className="flex flex-col gap-3">
@@ -73,6 +77,22 @@ export const CardSelect = ({ label }) => {
   );
 };
 
+const Connect = () => {
+  const { activateBrowserWallet, account } = useEthers();
+
+  const etherBalance = useEtherBalance(account);
+
+  return (
+    <div>
+      {!account && (
+        <button onClick={() => activateBrowserWallet()}>Connect</button>
+      )}
+      {account && <p>Account: {account}</p>}
+      {etherBalance && <p>Balance: {formatEther(etherBalance)}</p>}
+    </div>
+  );
+};
+
 export default function Home() {
   const { register, handleSubmit } = useForm();
   const onSubmit = data => {
@@ -87,6 +107,7 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
+      <Connect />
       <main className={styles.main}>
         <div className="flex justify-between gap-10 w-full max-w-2xl">
           <div>
