@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import styles from '../../../styles/Home.module.css';
 import { pfpAbi } from "../../../abi";
-import { ethers } from 'ethers'
+import { ethers, utils } from 'ethers'
 import toast from "react-hot-toast";
 import { Wrapper } from "../..";
 
@@ -15,7 +15,21 @@ const InvalidCode = () => (
 
 const MintButton = () => {
   const { query: { collectionId: collectionAddress, inviteCode, inviteSig } } = useRouter()
-  const { library } = useEthers()
+  const { library, account } = useEthers()
+  const [mintPrice, setMintPrice] = useState()
+
+  useEffect(() => {
+    const retrieveMintPrice = async () => {
+      const contract = new ethers.Contract(collectionAddress, pfpAbi, library.getSigner())
+      const price = await contract.price()
+      console.log(price)
+      setMintPrice(price)
+    }
+
+    if (!library || !account || !collectionAddress) return
+
+    retrieveMintPrice()
+  }, [library, account, collectionAddress])
 
   const getTokenMetadata = async (tokenId) => {
     const contract = new ethers.Contract(collectionAddress, pfpAbi, library.getSigner())
@@ -25,10 +39,10 @@ const MintButton = () => {
     return metadata
   }
 
+
   const mintPFP = async () => {
-    console.log(inviteCode, inviteSig)
     const contract = new ethers.Contract(collectionAddress, pfpAbi, library.getSigner())
-    return await contract.safeMint(inviteCode, inviteSig, { value: 0 })
+    return await contract.safeMint(inviteCode, inviteSig, { value: mintPrice })
   }
 
   const handleMint = async () => {
@@ -47,7 +61,10 @@ const MintButton = () => {
 
   return (
     <>
-      <div>
+      <div className="flex flex-col items-center gap-2">
+        {mintPrice?.gt(0) && (
+          <div>{utils.formatEther(mintPrice)} ETH</div>
+        )}
         <button onClick={handleMint} className="hover:bg-indigo-600 bg-indigo-500 text-white px-4 py-2 rounded-md">
           Mint your PFP
         </button>

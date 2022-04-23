@@ -175,7 +175,7 @@ const CreatorForm = ({ onSelectedBodies = () => { }, onSelectedHeads = () => { }
     send("PFPNative",
       name,
       // add different mint price
-      0,
+      price,
       ImageData.bgcolors,
       ImageData.palette,
       bodies.map(({ data }) => data),
