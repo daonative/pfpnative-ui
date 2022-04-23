@@ -15,6 +15,7 @@ const COLORS = [
 
 function DrawingPanel({ selectedColor }) {
   const [pixelColors, setPixelColors] = useState()
+  const [pixelHoverColors, setPixelHoverColors] = useState()
 
   const width = 32;
   const height = 32;
@@ -23,15 +24,15 @@ function DrawingPanel({ selectedColor }) {
   const cols = [...Array(width).keys()]
 
   const setColor = (rowId, colId, color) => {
-    setPixelColors(prevState => _.merge({}, prevState, { [rowId]: { [colId]: { color } } }))
+    setPixelColors(prevState => _.merge({}, prevState, { [rowId]: { [colId]: color } }))
   }
 
   const handleHover = (rowId, colId, color) => {
-    setPixelColors(prevState => _.merge({}, prevState, { [rowId]: { [colId]: { hoverColor: color } } }))
+    setPixelHoverColors(prevState => _.merge({}, prevState, { [rowId]: { [colId]: color } }))
   }
 
   const handleHoverExit = (rowId, colId) => {
-    setPixelColors(prevState => _.merge({}, prevState, { [rowId]: { [colId]: { hoverColor: null } } }))
+    setPixelHoverColors(prevState => _.merge({}, prevState, { [rowId]: { [colId]: null } }))
   }
 
   return (
@@ -40,9 +41,10 @@ function DrawingPanel({ selectedColor }) {
         {rows.map(rowId => (
           <div key={`row-${rowId}`} className="flex fit-content">
             {cols.map(colId => {
-              const pixel = pixelColors?.[rowId]?.[colId] || {}
-              const color = pixel.hoverColor || pixel.color || null
-              const style = color ? {backgroundColor: color} : {}
+              const pixelColor = pixelColors?.[rowId]?.[colId] || null
+              const pixelHoverColor = pixelHoverColors?.[rowId]?.[colId] || null
+              const color = pixelHoverColor || pixelColor || null
+              const style = color ? { backgroundColor: color } : {}
               return (
                 <div
                   key={`pixel-${rowId}-${colId}`}
@@ -55,19 +57,32 @@ function DrawingPanel({ selectedColor }) {
               )
             })}
           </div>
-          ))}
+        ))}
       </div>
     </div>
   );
 }
 
-
-export default function Draw() {
+const TraitEditor = () => {
   const [selectedColor, setColor] = useState(FIRST_COLOR);
 
   const changeColor = (color) => setColor(color.hex)
   const handleEraser = () => setColor(null)
 
+  return (
+    <>
+      <CirclePicker colors={COLORS} color={selectedColor || "#ffffff00"} onChangeComplete={changeColor} />
+      <button onClick={handleEraser}>
+        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+      <DrawingPanel selectedColor={selectedColor} />
+    </>
+  )
+}
+
+export default function Draw() {
   return (
     <div >
       <main className={styles.main}>
@@ -76,13 +91,7 @@ export default function Draw() {
 
           </div>
           <div className="flex flex-col gap-8 items-center">
-            <CirclePicker colors={COLORS} color={selectedColor || "#ffffff00"} onChangeComplete={changeColor} />
-            <button onClick={handleEraser}>
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-            <DrawingPanel selectedColor={selectedColor} />
+            <TraitEditor />
           </div>
         </div>
       </main>
