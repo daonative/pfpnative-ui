@@ -87,22 +87,19 @@ const Connect = () => {
   const etherBalance = useEtherBalance(account);
 
   return (
-    <div>
-      {!account && (
-        <button onClick={() => activateBrowserWallet()}>Connect</button>
-      )}
-      {account && <p>Account: {account}</p>}
-      {etherBalance && <p>Balance: {formatEther(etherBalance)}</p>}
+    <div className='h-screen w-screen flex justify-center items-center'>
+      <button
+        className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+        onClick={() => activateBrowserWallet()}>
+        Connect
+      </button>
     </div>
   );
 };
 const Wrapper = ({ children }) => {
   const { account } = useEthers()
-  if (!account) return null
+  if (!account) return <Connect />
   return children
-
-
-
 }
 const CreatorForm = () => {
   const { library } = useEthers()
@@ -114,10 +111,11 @@ const CreatorForm = () => {
   const { state, send } = useContractFunction(contract, 'createPFPCollection', { transactionName: 'createPFPCollection' })
   console.log(state)
 
-  const createPFPContract = (bodies, heads) => {
+  const createPFPContract = (bodies, heads, name) => {
     console.log(bodies, heads)
     send("PFPNative",
-      "PFP",
+      name,
+      // add different mint price
       0,
       data.bgcolors,
       data.palette,
@@ -131,7 +129,7 @@ const CreatorForm = () => {
     const parsedHeads = JSON.parse(data.heads)
     const parsedBodies = JSON.parse(data.bodies)
 
-    createPFPContract(parsedBodies, parsedHeads)
+    createPFPContract(parsedBodies, parsedHeads, data.communityName)
   };
 
   const bodiesA = data.images.bodies.slice(0, 4)
@@ -175,23 +173,22 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <Connect />
-      <main className={styles.main}>
-        <div className="flex justify-between gap-10 w-full max-w-2xl">
-          <div>
-            <Wrapper>
+      <Wrapper>
+        <main className={styles.main}>
+          <div className="flex justify-between gap-10 w-full max-w-2xl">
+            <div>
               <CreatorForm />
-            </Wrapper>
-          </div>
+            </div>
 
-          <div>
-            <h2>preview</h2>
-            <div className="w-[300px] h-[300px] flex justify-center items-center bg-white rounded-lg shadow divide-y divide-x divide-gray-200 cursor-pointer">
-              image
+            <div>
+              <h2>preview</h2>
+              <div className="w-[300px] h-[300px] flex justify-center items-center bg-white rounded-lg shadow divide-y divide-x divide-gray-200 cursor-pointer">
+                image
+              </div>
             </div>
           </div>
-        </div>
-      </main>
+        </main>
+      </Wrapper>
 
       <footer className={styles.footer}>
         <a
