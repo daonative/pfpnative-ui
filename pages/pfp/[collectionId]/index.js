@@ -31,12 +31,25 @@ const InviteLink = () => {
   }
 
   return (
-    <div>
-      <button onClick={handleGenerateInviteLink}>
-        Generate Invite Link
-      </button>
-      {inviteLink}
-    </div>
+    <>
+      {!inviteLink && (
+        <div>
+          <button onClick={handleGenerateInviteLink} className="hover:bg-indigo-600 bg-indigo-500 text-white px-4 py-2 rounded-md">
+            Generate Invite Link
+          </button>
+        </div>
+      )}
+      {inviteLink && (
+        <div className="w-full">
+          <input
+            type="text"
+            disabled
+            className="text-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full  border-transparent rounded-md w-full"
+            value={inviteLink}
+          />
+        </div>
+      )}
+    </>
   )
 }
 
@@ -82,14 +95,14 @@ const CollectionTokens = () => {
   }, [library, account, collectionAddress])
 
   return (
-    <>
+    <div className="flex flex-col gap-4 items-center">
       {!isLoading && collectionTokens.length === 0 && (
         <NoTokens />
       )}
       {account === collectionOwner && (
         <InviteLink />
       )}
-    </>
+    </div>
   );
 
 }
