@@ -12,6 +12,7 @@ import { formatEther } from '@ethersproject/units';
 import { creatorAbi } from '../abi';
 import { Contract, utils } from 'ethers'
 import { useRouter } from 'next/router';
+import toast from 'react-hot-toast';
 
 
 export const Input = ({ name, register, required, placeholder, className }) => {
@@ -124,7 +125,7 @@ const Connect = () => {
     </div>
   );
 };
-const Wrapper = ({ children }) => {
+export const Wrapper = ({ children }) => {
   const { account } = useEthers()
   if (!account) return <Connect />
   return children
@@ -154,15 +155,17 @@ const CreatorForm = ({ onSelectedBodies = () => { }, onSelectedHeads = () => { }
   }, [selectedHeadRange, onSelectedHeads])
 
   const createPFPContract = (bodies, heads, name, price) => {
+    const toastId = toast.loading("Creating your PFP collection")
     contract.on('PFPCollectionCreated', (event) => {
+      toast.success("Created your PFP!", {id: toastId})
       router.push(`/pfp/${event}`)
     })
     send("PFPNative",
       name,
       // add different mint price
-      price,
-      data.bgcolors,
-      data.palette,
+      0,
+      ImageData.bgcolors,
+      ImageData.palette,
       bodies.map(({ data }) => data),
       heads.map(({ data }) => data)
     )
@@ -268,19 +271,6 @@ export default function Home() {
           </div>
         </main>
       </Wrapper>
-
-      <footer className={styles.footer}>
-        <a
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Powered by{' '}
-          <span className={styles.logo}>
-            <Image src="/vercel.svg" alt="Vercel Logo" width={72} height={16} />
-          </span>
-        </a>
-      </footer>
     </div>
   );
 }

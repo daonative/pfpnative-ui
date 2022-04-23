@@ -25,10 +25,6 @@ const MintButton = () => {
     return metadata
   }
 
-  const retrieveTokenMetadata = async (tokenId) => {
-    const metadata = await getTokenMetadata(tokenId)
-  }
-
   const mintPFP = async () => {
     console.log(inviteCode, inviteSig)
     const contract = new ethers.Contract(collectionAddress, pfpAbi, library.getSigner())
