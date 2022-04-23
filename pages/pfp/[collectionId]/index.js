@@ -13,6 +13,8 @@ const NoTokens = () => (
 
 const InviteLink = () => {
   const [inviteLink, setInviteLink] = useState()
+  const { query: { collectionId: collectionAddress } } = useRouter()
+  const { library } = useEthers()
 
   const generateInviteCodes = async () => {
     const signer = library.getSigner()
@@ -79,16 +81,15 @@ const CollectionTokens = () => {
     retrieveCollectionOwner()
   }, [library, account, collectionAddress])
 
-  if (!isLoading && collectionTokens.length === 0) {
-    return <NoTokens />
-  }
-
-  if (account === collectionOwner) {
-    return <InviteLink />
-  }
-
   return (
-    <></>
+    <>
+      {!isLoading && collectionTokens.length === 0 && (
+        <NoTokens />
+      )}
+      {account === collectionOwner && (
+        <InviteLink />
+      )}
+    </>
   );
 
 }
@@ -104,7 +105,9 @@ const PFP = () => {
     <div >
       <main className={styles.main}>
         <div className="flex justify-center w-full max-w-2xl">
-          <CollectionTokens />
+          <div>
+            <CollectionTokens />
+          </div>
         </div>
       </main>
     </div>
