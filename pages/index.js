@@ -41,19 +41,7 @@ export const TextField = ({ label, name, register, required, placeholder }) => {
   );
 };
 
-export const Select = React.forwardRef(
-  ({ onChange, onBlur, name, label, data = [] }, ref) => (
-    <div className="flex flex-col gap-3">
-      <label>{label}</label>
-      <select name={name} ref={ref} onChange={onChange} onBlur={onBlur}>
-        {data.map((item) => {
-          return <option value={JSON.stringify(item?.assets)}>{item.title}</option>
-        })}
-      </select>
-    </div>
-  )
-);
-Select.displayName = 'Select';
+
 const CardLabel = ({ children }) => {
   return <label
     htmlFor="email"
@@ -71,9 +59,9 @@ export const CardSelect = ({ assets, children }) => {
       <div
         className=" w-[150px] peer-checked:bg-blue-100 col-span-1 grid grid-cols-2 bg-white rounded-lg shadow divide-y divide-x divide-gray-200 cursor-pointer "
       >
-        {assets.map((asset) => {
+        {assets.map((asset, index) => {
           return (
-            <div className="w-[75px] h-[75px]  flex items-center justify-between space-x-6 aspect-square pb-full">
+            <div key={index} className="w-[75px] h-[75px]  flex items-center justify-between space-x-6 aspect-square pb-full">
               <Preview parts={[asset]} />
             </div>
           )
