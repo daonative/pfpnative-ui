@@ -6,7 +6,7 @@ import { useForm } from 'react-hook-form';
 
 export const Input = ({ label, name, register, required, placeholder }) => {
   return (
-    <div>
+    <div className="flex flex-col gap-3">
       <label
         htmlFor="email"
         className="block text-sm font-medium text-gray-700"
@@ -27,13 +27,13 @@ export const Input = ({ label, name, register, required, placeholder }) => {
 
 export const Select = React.forwardRef(
   ({ onChange, onBlur, name, label }, ref) => (
-    <>
+    <div className="flex flex-col gap-3">
       <label>{label}</label>
       <select name={name} ref={ref} onChange={onChange} onBlur={onBlur}>
         <option value="20">20</option>
         <option value="30">30</option>
       </select>
-    </>
+    </div>
   )
 );
 Select.displayName = 'Select';
@@ -41,7 +41,7 @@ Select.displayName = 'Select';
 export const CardSelect = ({ label }) => {
   const people = [1, 2];
   return (
-    <div>
+    <div className="flex flex-col gap-3">
       <label
         htmlFor="email"
         className="block text-sm font-medium text-gray-700"
@@ -101,6 +101,7 @@ export default function Home() {
                 register={register}
               />
               <CardSelect label={'Head Collections'} />
+              <CardSelect label={'Body Collections'} />
             </form>
           </div>
 
