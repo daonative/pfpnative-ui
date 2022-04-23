@@ -48,38 +48,37 @@ export const Select = React.forwardRef(
   )
 );
 Select.displayName = 'Select';
+const CardLabel = ({ children }) => {
+  return <label
+    htmlFor="email"
+    className="block text-sm font-medium text-gray-700"
+  >
+    {children}
+  </label>
+}
 
-export const CardSelect = ({ label }) => {
-  const people = [1, 2];
+export const CardSelect = ({ assets, children }) => {
+  console.log('yo', assets)
+  if (!assets) return null
   return (
-    <div className="flex flex-col gap-3">
-      <label
-        htmlFor="email"
-        className="block text-sm font-medium text-gray-700"
+    <div role="list" className="grid grid-cols-1 gap-8 grid-cols-2 ">
+      {children}
+      <div
+        className=" w-[150px] peer-checked:bg-blue-100 col-span-1 grid grid-cols-2 bg-white rounded-lg shadow divide-y divide-x divide-gray-200 cursor-pointer "
       >
-        {label}
-      </label>
-      <ul role="list" className="grid grid-cols-1 gap-8 grid-cols-2 ">
-        {people.map(person => (
-          <li
-            key={person.email}
-            className="w-[150px] col-span-1 grid grid-cols-2 bg-white rounded-lg shadow divide-y divide-x divide-gray-200 cursor-pointer "
-          >
-            <div className="w-[75px] h-[75px]  flex items-center justify-between p-6 space-x-6 aspect-square pb-full">
-              1
-            </div>
-            <div className="aspect-square w-[75px] h-[75px] flex items-center justify-between p-6 space-x-6">
-              2
-            </div>
-            <div className="aspect-square w-[75px] h-[75px] flex items-center justify-between p-6 space-x-6">
-              3
-            </div>
-            <div className="w-[75px] h-[75px] flex items-center justify-between p-6 space-x-6">
-              4
-            </div>
-          </li>
-        ))}
-      </ul>
+        <div className="w-[75px] h-[75px]  flex items-center justify-between p-6 space-x-6 aspect-square pb-full">
+          <img src={`data:image/svg+xml;base64,${assets[0].data}`} />
+        </div>
+        <div className="aspect-square w-[75px] h-[75px] flex items-center justify-between p-6 space-x-6">
+          2
+        </div>
+        <div className="aspect-square w-[75px] h-[75px] flex items-center justify-between p-6 space-x-6">
+          3
+        </div>
+        <div className="w-[75px] h-[75px] flex items-center justify-between p-6 space-x-6">
+          4
+        </div>
+      </div>
     </div>
   );
 };
@@ -116,7 +115,7 @@ const Connect = () => {
     </div>
   );
 };
-export const Wrapper = ({ children }) => {
+const Wrapper = ({ children }) => {
   const { account } = useEthers()
   if (!account) return <Connect />
   return children
@@ -131,9 +130,9 @@ const CreatorForm = () => {
 
 
   const { state, send } = useContractFunction(contract, 'createPFPCollection', { transactionName: 'createPFPCollection' })
-  console.log(state)
 
   const createPFPContract = (bodies, heads, name) => {
+
     contract.on('PFPCollectionCreated', (event) => {
       router.push(`/ pfp / ${ event }`)
     })
@@ -148,12 +147,10 @@ const CreatorForm = () => {
     )
   }
   const onSubmit = data => {
-
     console.log(data)
-    const parsedHeads = JSON.parse(data.heads)
-    const parsedBodies = JSON.parse(data.bodies)
-
-    createPFPContract(parsedBodies, parsedHeads, data.communityName)
+    const heads = data?.images?.heads.slice(...data.heads)
+    const bodies = data?.images?.bodies.slice(...data.bodies)
+    createPFPContract(bodies, heads, data.communityName)
   };
 
   const bodiesA = data.images.bodies.slice(0, 4)
@@ -161,6 +158,7 @@ const CreatorForm = () => {
 
   const headsA = data.images.heads.slice(0, 4)
   const headsB = data.images.heads.slice(5, 9)
+  console.log('preview', headsA)
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
@@ -172,10 +170,21 @@ const CreatorForm = () => {
         placeholder="DAOschool"
         register={register}
       />
-      <Select label={"Head Collections"} name="heads" {...register('heads')} data={[{ title: 'A', assets: headsA }, { title: 'B', assets: headsB }]} />
-      <Select label={"Body Collections"} name="bodies" {...register('bodies')} data={[{ title: 'A', assets: bodiesA }, { title: 'B', assets: bodiesB }]} />
-      {/* <CardSelect label={'Head Collections'} register={register}/>
-      <CardSelect label={'Body Collections'} /> */}
+      <CardLabel>Head Collections</CardLabel>
+      <label htmlFor="heads">
+        <CardSelect assets={headsA} >
+
+          <input className="sr-only peer" type="radio" value={[0, 4]} {...register('heads',)} id="heads" />
+        </CardSelect>
+      </label>
+
+      <label htmlFor="heads">
+        <CardSelect assets={headsB} >
+          <input className="sr-only peer" type="radio" value={[5, 9]} {...register('heads',)} id="heads" />
+        </CardSelect>
+      </label>
+      <CardLabel>Body Collections</CardLabel>
+      <CardSelect label={'Body Collections'} />
       < button
         type="submit"
         className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
