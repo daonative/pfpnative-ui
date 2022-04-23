@@ -126,7 +126,7 @@ const CreatorForm = () => {
   const router = useRouter()
 
   const contract = new Contract('0x2dc5f315decc758d5deacbf303f6ec5897c40976', creatorAbi, library.getSigner())
-  const { register, handleSubmit } = useForm();
+  const { register, handleSubmit } = useForm({ defaultValues: { mintPrice: 0 } });
   const { state, send } = useContractFunction(contract, 'createPFPCollection', { transactionName: 'createPFPCollection' })
 
   const createPFPContract = (bodies, heads, name, price) => {
