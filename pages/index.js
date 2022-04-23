@@ -9,6 +9,7 @@ import { useEtherBalance, useEthers, Config, useContractFunction } from '@usedap
 
 import { formatEther } from '@ethersproject/units';
 import { creatorAbi } from '../abi';
+import { Contract } from 'ethers'
 
 export const Input = ({ label, name, register, required, placeholder }) => {
   return (
@@ -94,13 +95,23 @@ const Connect = () => {
     </div>
   );
 };
+const Wrapper = ({ children }) => {
+  const { account } = useEthers()
+  if (!account) return null
+  return children
+
+
+
+}
 const CreatorForm = () => {
-  const { library } = useEthers
+  const { library } = useEthers()
+
   const contract = new Contract('0x2dc5f315decc758d5deacbf303f6ec5897c40976', creatorAbi, library.getSigner())
   const { register, handleSubmit } = useForm();
 
 
   const { state, send } = useContractFunction(contract, 'createPFPCollection', { transactionName: 'createPFPCollection' })
+  console.log(state)
 
   const createPFPContract = (bodies, heads) => {
     send("PFPNative",
@@ -108,8 +119,8 @@ const CreatorForm = () => {
       0,
       data.bgcolors,
       data.palette,
-      bodies,
-      heads
+      bodies.map(({ data }) => data),
+      heads.map(({ data }) => data)
     )
   }
   const onSubmit = data => {
@@ -194,7 +205,6 @@ const CreatorForm = () => {
       }
     ]
     createPFPContract(bodies, heads)
-    alert(JSON.stringify(data));
   };
 
   return (<form
@@ -233,7 +243,9 @@ export default function Home() {
       <main className={styles.main}>
         <div className="flex justify-between gap-10 w-full max-w-2xl">
           <div>
-            <CreatorForm />
+            <Wrapper>
+              <CreatorForm />
+            </Wrapper>
           </div>
 
           <div>
