@@ -182,7 +182,8 @@ const CreatorForm = ({ onSelectedBodies = () => { }, onSelectedHeads = () => { }
 
   const createPFPContract = (bodies, heads, name, price) => {
     const toastId = toast.loading("Creating your PFP collection")
-    contract.on('PFPCollectionCreated', (event) => {
+    contract.on('PFPCollectionCreated', async (event) => {
+      await new Promise(r => setTimeout(r, 2000));
       toast.success("Created your PFP!", { id: toastId })
       router.push(`/pfp/${event}`)
     })

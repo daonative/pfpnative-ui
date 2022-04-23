@@ -73,6 +73,7 @@ const MintButton = () => {
       const tx = await mintPFP()
       toast.loading("Minting your PFP...", { id: toastId })
       const receipt = await tx.wait()
+      await new Promise(r => setTimeout(r, 2000));
       const tokenId = getTokenIdFromTxReceipt(receipt)
       const tokenMetadata = await getTokenMetadata(tokenId)
       setTokenId(tokenId)
