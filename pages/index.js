@@ -11,7 +11,7 @@ import { useEtherBalance, useEthers, Config, useContractFunction } from '@usedap
 
 import { formatEther } from '@ethersproject/units';
 import { creatorAbi } from '../abi';
-import { Contract } from 'ethers'
+import { Contract, utils } from 'ethers'
 import { useRouter } from 'next/router';
 
 
@@ -28,7 +28,7 @@ export const TextField = ({ label, name, register, required, placeholder }) => {
   return (
     <div className="flex flex-col gap-3">
       <label
-        htmlFor="email"
+        htmlFor={name}
         className="block text-sm font-medium text-gray-700"
       >
         {label}
@@ -129,7 +129,7 @@ const CreatorForm = () => {
   const { register, handleSubmit } = useForm();
   const { state, send } = useContractFunction(contract, 'createPFPCollection', { transactionName: 'createPFPCollection' })
 
-  const createPFPContract = (bodies, heads, name) => {
+  const createPFPContract = (bodies, heads, name, price) => {
 
     contract.on('PFPCollectionCreated', (event) => {
       router.push(`/pfp/${event}`)
@@ -137,7 +137,7 @@ const CreatorForm = () => {
     send("PFPNative",
       name,
       // add different mint price
-      0,
+      price,
       data.bgcolors,
       data.palette,
       bodies.map(({ data }) => data),
@@ -148,7 +148,8 @@ const CreatorForm = () => {
     console.log(data)
     const heads = data?.images?.heads.slice(...data.heads)
     const bodies = data?.images?.bodies.slice(...data.bodies)
-    createPFPContract(bodies, heads, data.communityName)
+    const price = utils.parseEther(data.mintPrice)
+    createPFPContract(bodies, heads, data.communityName, price)
   };
 
   const bodiesA = data.images.bodies.slice(0, 4)
