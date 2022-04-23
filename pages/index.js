@@ -14,7 +14,17 @@ import { creatorAbi } from '../abi';
 import { Contract } from 'ethers'
 import { useRouter } from 'next/router';
 
-export const Input = ({ label, name, register, required, placeholder }) => {
+
+export const Input = ({ name, register, required, placeholder, className }) => {
+  return <input
+    type="text"
+    {...register(name, { required })}
+    className="text-2xl focus:ring-indigo-500 focus:border-indigo-500 block w-full  border-transparent rounded-md"
+    placeholder={placeholder}
+  />
+}
+
+export const TextField = ({ label, name, register, required, placeholder }) => {
   return (
     <div className="flex flex-col gap-3">
       <label
@@ -24,12 +34,8 @@ export const Input = ({ label, name, register, required, placeholder }) => {
         {label}
       </label>
       <div className="mt-1">
-        <input
-          type="text"
-          {...register(name, { required })}
-          className="text-2xl focus:ring-indigo-500 focus:border-indigo-500 block w-full  border-transparent rounded-md"
-          placeholder={placeholder}
-        />
+        <Input name={name} register={register} required={required} placeholder={placeholder} />
+
       </div>
     </div>
   );
@@ -157,12 +163,25 @@ const CreatorForm = () => {
       onSubmit={handleSubmit(onSubmit)}
       className="flex flex-col gap-y-8"
     >
-      <Input
+      <TextField
         name="communityName"
         label="Community Name"
         placeholder="DAOschool"
         register={register}
       />
+      <div>
+        <label className="block text-sm font-medium pb-2">
+          Mint Price
+        </label>
+        <div className="relative rounded-md shadow-sm" style={{ maxWidth: '100px' }}>
+          <Input register={register} name="mintPrice" required placeholder="0.1" />
+          <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+            <span className="text-gray-500 sm:text-sm" id="price-currency">
+              ETH
+            </span>
+          </div>
+        </div>
+      </div>
       <CardLabel>Head Collections</CardLabel>
       <div className='flex'>
         <label htmlFor="heads-0">
@@ -192,12 +211,6 @@ const CreatorForm = () => {
         </label>
       </div>
       <CardSelect label={'Body Collections'} />
-      <Input
-        name="mintPrice"
-        label="Mint Price"
-        placeholder="0.1"
-        register={register}
-      />
       <button
         type="submit"
         className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
