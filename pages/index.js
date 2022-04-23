@@ -14,6 +14,7 @@ import { Contract, utils } from 'ethers'
 import { useRouter } from 'next/router';
 import toast from 'react-hot-toast';
 import WalletConnectProvider from '@walletconnect/web3-provider';
+import HeaderNavigation from '../component/HeaderNav';
 
 
 export const Input = ({ name, register, required, placeholder, className }) => {
