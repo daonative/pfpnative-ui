@@ -104,7 +104,7 @@ const MintButton = () => {
             <a href={`https://kovan-optimistic.etherscan.io/token/${collectionAddress}?a=${tokenId}`}>
               <img src={tokenMetadata.image} />
             </a>
-            <a href={`${window?.origin}/pfp/${collectionAddress}`}>
+            <a href={`${window?.origin}/pfp/${collectionAddress}`} target="_blank" rel="noreferrer">
               <button className="hover:bg-indigo-600 bg-indigo-500 text-white px-4 py-2 rounded-md">
                 Go back to collection
               </button>
@@ -119,15 +119,15 @@ const MintButton = () => {
 const PFP = () => {
   return (
     <div >
-      <main className={styles.main}>
-        <div className="flex justify-center w-full max-w-2xl">
-          <div>
-            <Wrapper>
+      <Wrapper>
+        <main className={styles.main}>
+          <div className="flex justify-center w-full max-w-2xl">
+            <div>
               <MintButton />
-            </Wrapper>
+            </div>
           </div>
-        </div>
-      </main>
+        </main>
+      </Wrapper>
     </div>
   )
 }

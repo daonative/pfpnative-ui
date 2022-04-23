@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import styles from '../../../styles/Home.module.css';
 import { pfpAbi } from "../../../abi";
 import { ethers } from 'ethers'
+import { Wrapper } from "../..";
 
 const NoTokens = () => (
   <div className="flex items-center">
@@ -57,7 +58,7 @@ const Token = ({ token }) => {
   const etherscanLink = `https://kovan-optimistic.etherscan.io/token/${token.collectionAddress}?a=${token.tokenId}`
   return (
     <div>
-      <a href={etherscanLink}>
+      <a href={etherscanLink} target="_blank" rel="noreferrer">
         <img src={token.metadata.image} />
       </a>
     </div>
@@ -129,13 +130,15 @@ const CollectionTokens = () => {
 const PFP = () => {
   return (
     <div >
-      <main className={styles.main}>
-        <div className="flex justify-center w-full max-w-2xl">
-          <div>
-            <CollectionTokens />
+      <Wrapper>
+        <main className={styles.main}>
+          <div className="flex justify-center w-full max-w-2xl">
+            <div>
+              <CollectionTokens />
+            </div>
           </div>
-        </div>
-      </main>
+        </main>
+      </Wrapper>
     </div>
   )
 }
