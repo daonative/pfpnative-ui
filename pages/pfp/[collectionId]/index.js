@@ -19,7 +19,7 @@ const InviteLink = () => {
   const generateInviteCodes = async () => {
     const signer = library.getSigner()
     const inviteCode = (Math.random() + 1).toString(36).substring(2)
-    const inviteHash = ethers.utils.solidityKeccak256(['string', 'uint'], [inviteCode, 0]);
+    const inviteHash = ethers.utils.solidityKeccak256(['string'], [inviteCode]);
     const inviteSig = await signer.signMessage(ethers.utils.arrayify(inviteHash))
     return { inviteCode, inviteSig }
   }
@@ -53,6 +53,15 @@ const InviteLink = () => {
   )
 }
 
+const Token = ({token}) => {
+  console.log(token.metadata)
+  return (
+    <div>
+      {token.tokenId}
+    </div>
+  )
+}
+
 const CollectionTokens = () => {
   const [isLoading, setIsLoading] = useState(false)
   const [collectionTokens, setCollectionTokens] = useState([])
@@ -64,6 +73,9 @@ const CollectionTokens = () => {
     const getTokenURI = async (tokenId) => {
       const contract = new ethers.Contract(collectionAddress, pfpAbi, library.getSigner())
       const uri = await contract.tokenURI(tokenId)
+      //const encodedJSON = uri.replace('data:application/json;base64,')
+      //console.log(uri)
+      //console.log(atob(encodedJSON))
       return uri
     }
 
@@ -102,15 +114,14 @@ const CollectionTokens = () => {
       {account === collectionOwner && (
         <InviteLink />
       )}
+      {!isLoading && collectionTokens.length !== 0 && (
+        <div>
+          {collectionTokens.map(token => <Token key={token.tokenId} token={token} />)}
+        </div>
+      )}
     </div>
   );
 
-}
-
-const Wrapper = ({ children }) => {
-  const { account } = useEthers()
-  if (!account) return null
-  return children
 }
 
 const PFP = () => {

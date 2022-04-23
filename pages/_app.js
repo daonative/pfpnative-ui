@@ -2,6 +2,7 @@ import '../styles/globals.css';
 import styles from '../styles/Home.module.css';
 import { Mainnet, DAppProvider } from '@usedapp/core';
 import { getDefaultProvider } from 'ethers';
+import { Toaster } from 'react-hot-toast'
 
 const config = {
   readOnlyChainId: Mainnet.chainId,
@@ -15,6 +16,7 @@ function MyApp({ Component, pageProps }) {
     <DAppProvider config={config}>
       <div className={styles.background}>
         <Component className={styles.background} {...pageProps} />
+        <Toaster position="bottom-center" />
       </div>
     </DAppProvider>
   );

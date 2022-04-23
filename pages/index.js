@@ -97,7 +97,7 @@ const Connect = () => {
     </div>
   );
 };
-const Wrapper = ({ children }) => {
+export const Wrapper = ({ children }) => {
   const { account } = useEthers()
   if (!account) return <Connect />
   return children
