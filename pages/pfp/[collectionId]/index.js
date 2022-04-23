@@ -53,11 +53,13 @@ const InviteLink = () => {
   )
 }
 
-const Token = ({token}) => {
-  console.log(token.metadata)
+const Token = ({ token }) => {
+  const etherscanLink = `https://kovan-optimistic.etherscan.io/token/${token.collectionAddress}?a=${token.tokenId}`
   return (
     <div>
-      <img src={token.metadata.image} />
+      <a href={etherscanLink}>
+        <img src={token.metadata.image} />
+      </a>
     </div>
   )
 }
@@ -91,6 +93,7 @@ const CollectionTokens = () => {
       const tokenIds = [...Array(currentSupply.toNumber()).keys()]
       const tokens = await Promise.all(tokenIds.map(async tokenId => ({
         tokenId,
+        collectionAddress,
         owner: await contract.ownerOf(tokenId),
         metadata: await getTokenMetadata(tokenId),
       })))

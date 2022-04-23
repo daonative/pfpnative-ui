@@ -67,7 +67,7 @@ export const CardSelect = ({ assets, children }) => {
         className=" w-[150px] peer-checked:bg-blue-100 col-span-1 grid grid-cols-2 bg-white rounded-lg shadow divide-y divide-x divide-gray-200 cursor-pointer "
       >
         <div className="w-[75px] h-[75px]  flex items-center justify-between p-6 space-x-6 aspect-square pb-full">
-          <img src={`data:image/svg+xml;base64,${assets[0].data}`} />
+          <Preview parts={[ImageData.images.bodies[0]]} />
         </div>
         <div className="aspect-square w-[75px] h-[75px] flex items-center justify-between p-6 space-x-6">
           2
@@ -85,7 +85,7 @@ export const CardSelect = ({ assets, children }) => {
 
 const Preview = ({ parts }) => {
   const { bgcolors, palette } = ImageData;
-  const svg = buildSVG(parts, palette, bgcolors[0])
+  const svg = buildSVG(parts, palette, 'fff')
   const encodedSvgData = `data:image/svg+xml;base64,${btoa(svg)}`
   return <img src={encodedSvgData} />
 }

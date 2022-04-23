@@ -17,6 +17,18 @@ const MintButton = () => {
   const { query: { collectionId: collectionAddress, inviteCode, inviteSig } } = useRouter()
   const { library } = useEthers()
 
+  const getTokenMetadata = async (tokenId) => {
+    const contract = new ethers.Contract(collectionAddress, pfpAbi, library.getSigner())
+    const uri = await contract.tokenURI(tokenId)
+    const metadataEncoded = uri.split(';base64,').pop()
+    const metadata = JSON.parse(atob(metadataEncoded))
+    return metadata
+  }
+
+  const retrieveTokenMetadata = async (tokenId) => {
+    const metadata = await getTokenMetadata(tokenId)
+  }
+
   const mintPFP = async () => {
     console.log(inviteCode, inviteSig)
     const contract = new ethers.Contract(collectionAddress, pfpAbi, library.getSigner())
