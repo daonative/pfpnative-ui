@@ -99,9 +99,16 @@ const MintButton = () => {
           </>
         )}
         {tokenMetadata && (
-          <a href={`https://kovan-optimistic.etherscan.io/token/${collectionAddress}?a=${tokenId}`}>
-            <img src={tokenMetadata.image} />
-          </a>
+          <>
+            <a href={`https://kovan-optimistic.etherscan.io/token/${collectionAddress}?a=${tokenId}`}>
+              <img src={tokenMetadata.image} />
+            </a>
+            <a href={`${window?.origin}/pfp/${collectionAddress}`}>
+              <button className="hover:bg-indigo-600 bg-indigo-500 text-white px-4 py-2 rounded-md">
+                Go back to collection
+              </button>
+            </a>
+          </>
         )}
       </div>
     </>
