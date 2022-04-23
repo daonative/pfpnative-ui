@@ -157,7 +157,7 @@ const CreatorForm = ({ onSelectedBodies = () => { }, onSelectedHeads = () => { }
   const createPFPContract = (bodies, heads, name, price) => {
     const toastId = toast.loading("Creating your PFP collection")
     contract.on('PFPCollectionCreated', (event) => {
-      toast.success("Created your PFP!", {id: toastId})
+      toast.success("Created your PFP!", { id: toastId })
       router.push(`/pfp/${event}`)
     })
     send("PFPNative",
@@ -172,9 +172,10 @@ const CreatorForm = ({ onSelectedBodies = () => { }, onSelectedHeads = () => { }
   }
   const onSubmit = data => {
     console.log(data)
-    const heads = ImageData.images?.heads.slice(...data.heads)
-    const bodies = ImageData.images?.bodies.slice(...data.bodies)
+    const heads = ImageData.images?.heads.slice(...data.heads.split(','))
+    const bodies = ImageData.images?.bodies.slice(...data.bodies.split(','))
     const price = utils.parseEther(data.mintPrice)
+    console.log(heads, bodies)
     createPFPContract(bodies, heads, data.communityName, price)
   };
 
