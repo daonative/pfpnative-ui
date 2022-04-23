@@ -10,6 +10,7 @@ import { useEtherBalance, useEthers, Config, useContractFunction } from '@usedap
 import { formatEther } from '@ethersproject/units';
 import { creatorAbi } from '../abi';
 import { Contract } from 'ethers'
+import { useRouter } from 'next/router';
 
 export const Input = ({ label, name, register, required, placeholder }) => {
   return (
@@ -104,6 +105,8 @@ const Wrapper = ({ children }) => {
 const CreatorForm = () => {
   const { library } = useEthers()
 
+  const router = useRouter()
+
   const contract = new Contract('0x2dc5f315decc758d5deacbf303f6ec5897c40976', creatorAbi, library.getSigner())
   const { register, handleSubmit } = useForm();
 
@@ -112,7 +115,9 @@ const CreatorForm = () => {
   console.log(state)
 
   const createPFPContract = (bodies, heads, name) => {
-    console.log(bodies, heads)
+    contract.on('PFPCollectionCreated', (event) => {
+      router.push(`/pfp/${event}`)
+    })
     send("PFPNative",
       name,
       // add different mint price
