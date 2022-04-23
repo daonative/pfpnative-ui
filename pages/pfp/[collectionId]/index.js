@@ -57,7 +57,7 @@ const Token = ({token}) => {
   console.log(token.metadata)
   return (
     <div>
-      {token.tokenId}
+      <img src={token.metadata.image} />
     </div>
   )
 }
@@ -70,13 +70,12 @@ const CollectionTokens = () => {
   const { library, account } = useEthers()
 
   useEffect(() => {
-    const getTokenURI = async (tokenId) => {
+    const getTokenMetadata = async (tokenId) => {
       const contract = new ethers.Contract(collectionAddress, pfpAbi, library.getSigner())
       const uri = await contract.tokenURI(tokenId)
-      //const encodedJSON = uri.replace('data:application/json;base64,')
-      //console.log(uri)
-      //console.log(atob(encodedJSON))
-      return uri
+      const metadataEncoded = uri.split(';base64,').pop()
+      const metadata = JSON.parse(atob(metadataEncoded))
+      return metadata
     }
 
     const retrieveCollectionOwner = async () => {
@@ -93,7 +92,7 @@ const CollectionTokens = () => {
       const tokens = await Promise.all(tokenIds.map(async tokenId => ({
         tokenId,
         owner: await contract.ownerOf(tokenId),
-        metadata: await getTokenURI(tokenId),
+        metadata: await getTokenMetadata(tokenId),
       })))
       setCollectionTokens(tokens)
       setIsLoading(false)
@@ -115,7 +114,7 @@ const CollectionTokens = () => {
         <InviteLink />
       )}
       {!isLoading && collectionTokens.length !== 0 && (
-        <div>
+        <div className="flex gap-4">
           {collectionTokens.map(token => <Token key={token.tokenId} token={token} />)}
         </div>
       )}
