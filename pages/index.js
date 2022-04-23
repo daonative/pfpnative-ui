@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import Head from 'next/head';
 import Image from 'next/image';
 import styles from '../styles/Home.module.css';
 import { useForm } from 'react-hook-form';
-import data from '../assets/image-data.json'
 import { buildSVG } from '@nouns/sdk';
 import ImageData from "../assets/image-data.json";
 
@@ -78,14 +77,36 @@ const Preview = ({ parts }) => {
   return <img src={encodedSvgData} />
 }
 
-const PreviewExample = () => {
-  const { images } = ImageData;
-  const parts = [
-    images.bodies[2],
-    images.heads[1]
-  ]
+const RandomPreview = ({ selectedBodies, selectedHeads }) => {
+  const [parts, setParts] = useState([])
 
-  return <Preview parts={parts} />
+  const previewRandomParts = useCallback(() => {
+    let parts = [];
+
+    if (selectedBodies.length > 0)
+      parts.push(selectedBodies[Math.floor(Math.random() * selectedBodies.length)])
+
+    if (selectedHeads.length > 0)
+      parts.push(selectedHeads[Math.floor(Math.random() * selectedHeads.length)])
+
+    setParts(parts)
+  }, [selectedBodies, selectedHeads])
+
+  useEffect(() => {
+    previewRandomParts()
+  }, [previewRandomParts])
+
+  return (
+    <div className="flex flex-col">
+      <div className="flex justify-between">
+        <h2>Preview</h2>
+        <button onClick={previewRandomParts}>Refresh</button>
+      </div>
+      <div className="w-[300px] h-[300px] flex justify-center items-center bg-white rounded-lg shadow divide-y divide-x divide-gray-200 cursor-pointer">
+        <Preview parts={parts} />
+      </div>
+    </div>
+  )
 }
 
 const Connect = () => {
@@ -108,17 +129,31 @@ const Wrapper = ({ children }) => {
   if (!account) return <Connect />
   return children
 }
-const CreatorForm = () => {
+const CreatorForm = ({ onSelectedBodies = () => { }, onSelectedHeads = () => { } }) => {
   const { library } = useEthers()
 
   const router = useRouter()
 
   const contract = new Contract('0x2dc5f315decc758d5deacbf303f6ec5897c40976', creatorAbi, library.getSigner())
-  const { register, handleSubmit } = useForm({ defaultValues: { mintPrice: 0 } });
+  const { register, handleSubmit, watch } = useForm();
   const { state, send } = useContractFunction(contract, 'createPFPCollection', { transactionName: 'createPFPCollection' })
 
-  const createPFPContract = (bodies, heads, name, price) => {
+  const selectedBodyRange = watch('bodies')
+  const selectedHeadRange = watch('heads')
 
+  useEffect(() => {
+    if (!selectedBodyRange) return
+    const selectedBodies = ImageData.images?.bodies.slice(...(selectedBodyRange.split(',')))
+    onSelectedBodies(selectedBodies)
+  }, [selectedBodyRange, onSelectedBodies])
+
+  useEffect(() => {
+    if (!selectedHeadRange) return
+    const selectedHeads = ImageData.images?.heads.slice(...(selectedHeadRange.split(',')))
+    onSelectedHeads(selectedHeads)
+  }, [selectedHeadRange, onSelectedHeads])
+
+  const createPFPContract = (bodies, heads, name, price) => {
     contract.on('PFPCollectionCreated', (event) => {
       router.push(`/pfp/${event}`)
     })
@@ -134,19 +169,17 @@ const CreatorForm = () => {
   }
   const onSubmit = data => {
     console.log(data)
-    const heads = data?.images?.heads.slice(...data.heads)
-    const bodies = data?.images?.bodies.slice(...data.bodies)
+    const heads = ImageData.images?.heads.slice(...data.heads)
+    const bodies = ImageData.images?.bodies.slice(...data.bodies)
     const price = utils.parseEther(data.mintPrice)
     createPFPContract(bodies, heads, data.communityName, price)
   };
 
-  const bodiesA = data.images.bodies.slice(0, 4)
-  const bodiesB = data.images.bodies.slice(5, 8)
+  const bodiesA = ImageData.images.bodies.slice(0, 4)
+  const bodiesB = ImageData.images.bodies.slice(5, 8)
+  const headsA = ImageData.images.heads.slice(0, 4)
+  const headsB = ImageData.images.heads.slice(5, 9)
 
-  const headsA = data.images.heads.slice(0, 4)
-  const headsB = data.images.heads.slice(5, 9)
-
-  console.log('preview', headsA)
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
@@ -190,12 +223,12 @@ const CreatorForm = () => {
       <div className='flex'>
         <label htmlFor="bodies-1">
           <CardSelect assets={bodiesA} >
-            <input className="sr-only peer" type="radio" value={[5, 9]} {...register('bodies',)} id="bodies-1" />
+            <input className="sr-only peer" type="radio" value={[0, 4]} {...register('bodies',)} id="bodies-1" />
           </CardSelect>
         </label>
         <label htmlFor="bodies-2">
           <CardSelect assets={bodiesB} >
-            <input className="sr-only peer" type="radio" value={[5, 9]} {...register('bodies',)} id="bodies-2" />
+            <input className="sr-only peer" type="radio" value={[5, 8]} {...register('bodies',)} id="bodies-2" />
           </CardSelect>
         </label>
       </div>
@@ -211,7 +244,8 @@ const CreatorForm = () => {
 }
 
 export default function Home() {
-
+  const [selectedBodies, setSelectedBodies] = useState([])
+  const [selectedHeads, setSelectedHeads] = useState([])
 
   return (
     <div>
@@ -225,14 +259,11 @@ export default function Home() {
         <main className={styles.main}>
           <div className="flex justify-between gap-10 w-full max-w-2xl">
             <div>
-              <CreatorForm />
+              <CreatorForm onSelectedHeads={setSelectedHeads} onSelectedBodies={setSelectedBodies} />
             </div>
 
             <div>
-              <h2>preview</h2>
-              <div className="w-[300px] h-[300px] flex justify-center items-center bg-white rounded-lg shadow divide-y divide-x divide-gray-200 cursor-pointer">
-                <PreviewExample />
-              </div>
+              <RandomPreview selectedBodies={selectedBodies} selectedHeads={selectedHeads} />
             </div>
           </div>
         </main>
