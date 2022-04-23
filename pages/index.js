@@ -58,7 +58,6 @@ const CardLabel = ({ children }) => {
 }
 
 export const CardSelect = ({ assets, children }) => {
-  console.log('yo', assets)
   if (!assets) return null
   return (
     <div role="list" className="grid grid-cols-1 gap-8 grid-cols-2 ">
@@ -66,18 +65,13 @@ export const CardSelect = ({ assets, children }) => {
       <div
         className=" w-[150px] peer-checked:bg-blue-100 col-span-1 grid grid-cols-2 bg-white rounded-lg shadow divide-y divide-x divide-gray-200 cursor-pointer "
       >
-        <div className="w-[75px] h-[75px]  flex items-center justify-between space-x-6 aspect-square pb-full">
-          <Preview parts={[ImageData.images.bodies[0]]} />
-        </div>
-        <div className="aspect-square w-[75px] h-[75px] flex items-center justify-between space-x-6">
-          <Preview parts={[ImageData.images.bodies[1]]} />
-        </div>
-        <div className="aspect-square w-[75px] h-[75px] flex items-center justify-between space-x-6">
-          <Preview parts={[ImageData.images.bodies[2]]} />
-        </div>
-        <div className="w-[75px] h-[75px] flex items-center justify-between  space-x-6">
-          <Preview parts={[ImageData.images.bodies[3]]} />
-        </div>
+        {assets.map((asset) => {
+          return (
+            <div className="w-[75px] h-[75px]  flex items-center justify-between space-x-6 aspect-square pb-full">
+              <Preview parts={[asset]} />
+            </div>
+          )
+        })}
       </div>
     </div>
   );
@@ -170,26 +164,41 @@ const CreatorForm = () => {
         register={register}
       />
       <CardLabel>Head Collections</CardLabel>
-      <label htmlFor="heads-0">
-        <CardSelect assets={headsA} >
-          <input className="sr-only peer" type="radio" value={[0, 4]} {...register('heads',)} id="heads-0" />
-        </CardSelect>
-      </label>
+      <div className='flex'>
+        <label htmlFor="heads-0">
+          <CardSelect assets={headsA} >
+            <input className="sr-only peer" type="radio" value={[0, 4]} {...register('heads',)} id="heads-0" />
+          </CardSelect>
+        </label>
 
-      <label htmlFor="heads-1">
-        <CardSelect assets={headsB} >
-          <input className="sr-only peer" type="radio" value={[5, 9]} {...register('heads',)} id="heads-1" />
-        </CardSelect>
-      </label>
+        <label htmlFor="heads-1">
+          <CardSelect assets={headsB} >
+            <input className="sr-only peer" type="radio" value={[5, 9]} {...register('heads',)} id="heads-1" />
+          </CardSelect>
+        </label>
+      </div>
       <CardLabel>Body Collections</CardLabel>
+
+      <div className='flex'>
+        <label htmlFor="bodies-1">
+          <CardSelect assets={bodiesA} >
+            <input className="sr-only peer" type="radio" value={[5, 9]} {...register('bodies',)} id="bodies-1" />
+          </CardSelect>
+        </label>
+        <label htmlFor="bodies-2">
+          <CardSelect assets={bodiesB} >
+            <input className="sr-only peer" type="radio" value={[5, 9]} {...register('bodies',)} id="bodies-2" />
+          </CardSelect>
+        </label>
+      </div>
       <CardSelect label={'Body Collections'} />
       <Input
         name="mintPrice"
-        label="mintPrice"
+        label="Mint Price"
         placeholder="0.1"
         register={register}
       />
-      < button
+      <button
         type="submit"
         className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
       >
