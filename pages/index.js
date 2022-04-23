@@ -13,6 +13,7 @@ import { creatorAbi } from '../abi';
 import { Contract, utils } from 'ethers'
 import { useRouter } from 'next/router';
 import toast from 'react-hot-toast';
+import WalletConnectProvider from '@walletconnect/web3-provider';
 
 
 export const Input = ({ name, register, required, placeholder, className }) => {
@@ -111,9 +112,15 @@ const RandomPreview = ({ selectedBodies, selectedHeads }) => {
 }
 
 const Connect = () => {
-  const { activateBrowserWallet, account } = useEthers();
+  const { activateBrowserWallet, account, activate } = useEthers();
 
-  const etherBalance = useEtherBalance(account);
+  const handleWalletConnect = async () => {
+    const provider = new WalletConnectProvider({
+      infuraId: '27e484dcd9e3efcfd25a83a78777cdf1',
+    })
+    await provider.enable()
+    activate(provider)
+  }
 
   return (
     <div className='h-screen w-screen flex justify-center items-center'>
@@ -121,6 +128,11 @@ const Connect = () => {
         className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
         onClick={() => activateBrowserWallet()}>
         Connect
+      </button>
+      <button
+        onClick={handleWalletConnect}>
+          wallet
+
       </button>
     </div>
   );
