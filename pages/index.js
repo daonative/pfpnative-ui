@@ -147,7 +147,7 @@ const CreatorForm = ({ onSelectedBodies = () => { }, onSelectedHeads = () => { }
 
   const router = useRouter()
 
-  const contract = new Contract('0x2dc5f315decc758d5deacbf303f6ec5897c40976', creatorAbi, library.getSigner())
+  const contract = new Contract('0xea177263d6ad370c5e739665f52c4c6760b8c85b', creatorAbi, library.getSigner())
   const { register, handleSubmit, watch } = useForm();
   const { state, send } = useContractFunction(contract, 'createPFPCollection', { transactionName: 'createPFPCollection' })
 
