@@ -1,3 +1,7 @@
+.background {
+  background: radial-gradient(105.5% 66.74% at 7% 26.23%, #DADEFF 0%, rgba(245, 239, 255, 0) 100%) /* warning: gradient uses a rotation that is not supported by CSS and may not behave as expected */, radial-gradient(27.88% 93.11% at 95.11% 18.44%, #FCDAFF 0%, rgba(245, 239, 255, 0) 100%) /* warning: gradient uses a rotation that is not supported by CSS and may not behave as expected */, radial-gradient(69.61% 69.61% at 16.44% 44%, #F5EFFF 0%, rgba(245, 239, 255, 0) 100%) /* warning: gradient uses a rotation that is not supported by CSS and may not behave as expected */, #FFFFFF;
+}
+
 .container {
   padding: 0 2rem;
 }
