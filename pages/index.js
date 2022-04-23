@@ -116,31 +116,44 @@ const Connect = () => {
 
   const handleWalletConnect = async () => {
     const provider = new WalletConnectProvider({
-      infuraId: '27e484dcd9e3efcfd25a83a78777cdf1',
+      infuraId: '2b1d42fbf594412093c66e1efcdf8b3d',
+      rpc: {
+        69: 'https://kovan.optimism.io/'
+      },
     })
     await provider.enable()
     activate(provider)
   }
 
   return (
-    <div className='h-screen w-screen flex justify-center items-center'>
+    <div className='h-screen w-screen flex justify-center items-center flex-col gap-5'>
       <button
-        className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+        className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
         onClick={() => activateBrowserWallet()}>
-        Connect
+        Metamask
       </button>
-      <button
-        onClick={handleWalletConnect}>
-          wallet
 
+      <button
+
+        className="border-1 inline-flex items-center px-6 py-3 border border-blue-600 text-base font-medium rounded-md shadow-sm text-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+
+        onClick={handleWalletConnect}>
+        Wallet Connect
       </button>
     </div>
   );
 };
 export const Wrapper = ({ children }) => {
-  const { account } = useEthers()
+  const { account, deactivate } = useEthers()
   if (!account) return <Connect />
-  return children
+  return (
+    <div>
+      <div className="cursor-pointer" onClick={deactivate}>{account}</div>
+      <div>
+        {children}
+      </div>
+    </div>
+  )
 }
 const CreatorForm = ({ onSelectedBodies = () => { }, onSelectedHeads = () => { } }) => {
   const { library } = useEthers()
