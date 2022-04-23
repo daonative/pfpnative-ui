@@ -17,6 +17,8 @@ const MintButton = () => {
   const { query: { collectionId: collectionAddress, inviteCode, inviteSig } } = useRouter()
   const { library, account } = useEthers()
   const [mintPrice, setMintPrice] = useState()
+  const [tokenMetadata, setTokenMetadata] = useState()
+  const [tokenId, setTokenId] = useState()
 
   useEffect(() => {
     const retrieveMintPrice = async () => {
@@ -39,6 +41,26 @@ const MintButton = () => {
     return metadata
   }
 
+  const getTokenIdFromTxReceipt = (txReceipt) => {
+    const PFPinterface = new utils.Interface(pfpAbi)
+    return txReceipt.logs
+      // Parse log events
+      .map((log) => {
+        try {
+          return PFPinterface.parseLog(log)
+        } catch (e) {
+          return undefined
+        }
+      })
+      // Get rid of the unknown events
+      .filter((event) => event !== undefined)
+      // Keep only Transfer events
+      .filter((event) => event.name === "Transfer")
+      // Take the third argument which is the token id
+      .map((event) => event.args[2].toNumber())
+      // Take the first id (there is only one)
+      .shift()
+  }
 
   const mintPFP = async () => {
     const contract = new ethers.Contract(collectionAddress, pfpAbi, library.getSigner())
@@ -50,7 +72,11 @@ const MintButton = () => {
     try {
       const tx = await mintPFP()
       toast.loading("Minting your PFP...", { id: toastId })
-      await tx.wait()
+      const receipt = await tx.wait()
+      const tokenId = getTokenIdFromTxReceipt(receipt)
+      const tokenMetadata = await getTokenMetadata(tokenId)
+      setTokenId(tokenId)
+      setTokenMetadata(tokenMetadata)
       toast.success("Successfully minted your PFP", { id: toastId })
     } catch (e) {
       const message = e?.data?.message || e?.error?.message || e.message
@@ -62,12 +88,21 @@ const MintButton = () => {
   return (
     <>
       <div className="flex flex-col items-center gap-2">
-        {mintPrice?.gt(0) && (
-          <div>{utils.formatEther(mintPrice)} ETH</div>
+        {!tokenMetadata && (
+          <>
+            {mintPrice?.gt(0) && (
+              <div>{utils.formatEther(mintPrice)} ETH</div>
+            )}
+            <button onClick={handleMint} className="hover:bg-indigo-600 bg-indigo-500 text-white px-4 py-2 rounded-md">
+              Mint your PFP
+            </button>
+          </>
         )}
-        <button onClick={handleMint} className="hover:bg-indigo-600 bg-indigo-500 text-white px-4 py-2 rounded-md">
-          Mint your PFP
-        </button>
+        {tokenMetadata && (
+          <a href={`https://kovan-optimistic.etherscan.io/token/${collectionAddress}?a=${tokenId}`}>
+            <img src={tokenMetadata.image} />
+          </a>
+        )}
       </div>
     </>
   )
