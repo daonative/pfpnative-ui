@@ -1,6 +1,8 @@
+import React from 'react';
 import Head from 'next/head';
 import Image from 'next/image';
 import styles from '../styles/Home.module.css';
+import { useForm } from 'react-hook-form';
 
 /*
   This example requires Tailwind CSS v2.0+ 
@@ -18,26 +20,43 @@ import styles from '../styles/Home.module.css';
   }
   ```
 */
- function Input() {
+const Input = ({ label, name, register, required, placeholder }) => {
   return (
     <div>
-      <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-        Email
+      <label
+        htmlFor="email"
+        className="block text-sm font-medium text-gray-700"
+      >
+        {label}
       </label>
       <div className="mt-1">
         <input
-          type="email"
-          name="email"
-          id="email"
+        type="text"
+          {...register(name, { required })}
           className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
-          placeholder="you@example.com"
+          placeholder={placeholder}
         />
       </div>
     </div>
-  )
-}
+  );
+};
+const Select = React.forwardRef(({ onChange, onBlur, name, label }, ref) => (
+  <>
+    <label>{label}</label>
+    <select name={name} ref={ref} onChange={onChange} onBlur={onBlur}>
+      <option value="20">20</option>
+      <option value="30">30</option>
+    </select>
+  </>
+));
+Select.displayName = 'Select';
 
 export default function Home() {
+  const { register, handleSubmit } = useForm();
+  const onSubmit = data => {
+    alert(JSON.stringify(data));
+  };
+
   return (
     <div className={styles.background}>
       <Head>
@@ -47,10 +66,21 @@ export default function Home() {
       </Head>
 
       <main className={styles.main}>
-        <div >
-          <Input />
+        <div className="flex justify-between w-full max-w-2xl">
+          <div>
+            <form onSubmit={handleSubmit(onSubmit)}>
+              <Input
+                name="communityName"
+                label="Community Name"
+                placeholder="DAOschool"
+                register={register}
+              />
+            </form>
+          </div>
+
+          <div>right</div>
         </div>
-     </main>
+      </main>
 
       <footer className={styles.footer}>
         <a
