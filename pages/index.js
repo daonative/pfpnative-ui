@@ -127,14 +127,12 @@ const CreatorForm = () => {
 
   const contract = new Contract('0x2dc5f315decc758d5deacbf303f6ec5897c40976', creatorAbi, library.getSigner())
   const { register, handleSubmit } = useForm();
-
-
   const { state, send } = useContractFunction(contract, 'createPFPCollection', { transactionName: 'createPFPCollection' })
 
   const createPFPContract = (bodies, heads, name) => {
 
     contract.on('PFPCollectionCreated', (event) => {
-      router.push(`/ pfp / ${ event }`)
+      router.push(`/pfp/${ event }`)
     })
     send("PFPNative",
       name,
@@ -158,6 +156,7 @@ const CreatorForm = () => {
 
   const headsA = data.images.heads.slice(0, 4)
   const headsB = data.images.heads.slice(5, 9)
+
   console.log('preview', headsA)
   return (
     <form
@@ -171,16 +170,15 @@ const CreatorForm = () => {
         register={register}
       />
       <CardLabel>Head Collections</CardLabel>
-      <label htmlFor="heads">
+      <label htmlFor="heads-0">
         <CardSelect assets={headsA} >
-
-          <input className="sr-only peer" type="radio" value={[0, 4]} {...register('heads',)} id="heads" />
+          <input className="sr-only peer" type="radio" value={[0, 4]} {...register('heads',)} id="heads-0" />
         </CardSelect>
       </label>
 
-      <label htmlFor="heads">
+      <label htmlFor="heads-1">
         <CardSelect assets={headsB} >
-          <input className="sr-only peer" type="radio" value={[5, 9]} {...register('heads',)} id="heads" />
+          <input className="sr-only peer" type="radio" value={[5, 9]} {...register('heads',)} id="heads-1" />
         </CardSelect>
       </label>
       <CardLabel>Body Collections</CardLabel>
