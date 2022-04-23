@@ -95,7 +95,7 @@ export const creatorAbi = [
   }
 ]
 
-const pfpAbi = [
+export const pfpAbi = [
   {
     "inputs": [
       {
