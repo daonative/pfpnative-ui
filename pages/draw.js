@@ -3,6 +3,8 @@ import Head from 'next/head';
 import Image from 'next/image';
 import styles from '../styles/Home.module.css';
 import { CirclePicker } from 'react-color';
+import _ from 'lodash';
+
 
 const FIRST_COLOR = "#f44336"
 const COLORS = [
@@ -10,55 +12,6 @@ const COLORS = [
   "#03a9f4", "#00bcd4", "#009688", "#4caf50", "#8bc34a", "#cddc39",
   "#ffeb3b", "#ffc107", "#ff9800", "#ff5722", "#795548", "#607d8b"
 ]
-
-function Pixel({ selectedColor }) {
-  const [pixelColor, setPixelColor] = useState("#ffffff00");
-  const [oldColor, setOldColor] = useState(pixelColor);
-  const [canChangeColor, setCanChangeColor] = useState(true);
-
-  function applyColor() {
-    setPixelColor(selectedColor);
-    setCanChangeColor(false);
-  }
-
-  function changeColorOnHover() {
-    setOldColor(pixelColor);
-    setPixelColor(selectedColor);
-  }
-
-  function resetColor() {
-    if (canChangeColor) {
-      setPixelColor(oldColor);
-    }
-
-    setCanChangeColor(true);
-  }
-
-  return (
-    <div
-      className="w-4 h-4 hover:cursor-pointer"
-      onClick={applyColor}
-      onMouseEnter={changeColorOnHover}
-      onMouseLeave={resetColor}
-      style={{ backgroundColor: pixelColor }}
-    ></div>
-  );
-}
-
-
-function Row(props) {
-  const { width, selectedColor } = props;
-
-  let pixels = [];
-
-
-
-  for (let i = 0; i < width; i++) {
-    pixels.push(<Pixel key={i} selectedColor={selectedColor} />);
-  }
-
-  return <div className="flex fit-content">{pixels}</div>;
-}
 
 function DrawingPanel({ selectedColor }) {
   const [pixelColors, setPixelColors] = useState()
@@ -85,7 +38,7 @@ function DrawingPanel({ selectedColor }) {
     <div className="flex flex-col items-center">
       <div>
         {rows.map(rowId => (
-          <div key={`col-${rowId}`} className="flex fit-content">
+          <div key={`row-${rowId}`} className="flex fit-content">
             {cols.map(colId => {
               const pixel = pixelColors?.[rowId]?.[colId] || {}
               const color = pixel.hoverColor || pixel.color || null
@@ -94,15 +47,15 @@ function DrawingPanel({ selectedColor }) {
                 <div
                   key={`pixel-${rowId}-${colId}`}
                   className="w-4 h-4 hover:cursor-pointer"
-                  onClick={setColor(rowId, colId, selectedColor)}
-                  onMouseEnter={handleHover(rowId, colId, selectedColor)}
-                  onMouseLeave={handleHoverExit(rowId, colId)}
+                  onClick={() => setColor(rowId, colId, selectedColor)}
+                  onMouseEnter={() => handleHover(rowId, colId, selectedColor)}
+                  onMouseLeave={() => handleHoverExit(rowId, colId)}
                   style={style}
                 />
               )
             })}
           </div>
-        ))}
+          ))}
       </div>
     </div>
   );
@@ -112,9 +65,8 @@ function DrawingPanel({ selectedColor }) {
 export default function Draw() {
   const [selectedColor, setColor] = useState(FIRST_COLOR);
 
-  function changeColor(color) {
-    setColor(color.hex);
-  }
+  const changeColor = (color) => setColor(color.hex)
+  const handleEraser = () => setColor(null)
 
   return (
     <div >
@@ -123,10 +75,9 @@ export default function Draw() {
           <div>
 
           </div>
-
           <div className="flex flex-col gap-8 items-center">
-            <CirclePicker colors={COLORS} color={selectedColor} onChangeComplete={changeColor} />
-            <button onClick={() => changeColor({ hex: "#ffffff00" })}>
+            <CirclePicker colors={COLORS} color={selectedColor || "#ffffff00"} onChangeComplete={changeColor} />
+            <button onClick={handleEraser}>
               <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
               </svg>
