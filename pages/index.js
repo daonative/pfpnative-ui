@@ -66,17 +66,17 @@ export const CardSelect = ({ assets, children }) => {
       <div
         className=" w-[150px] peer-checked:bg-blue-100 col-span-1 grid grid-cols-2 bg-white rounded-lg shadow divide-y divide-x divide-gray-200 cursor-pointer "
       >
-        <div className="w-[75px] h-[75px]  flex items-center justify-between p-6 space-x-6 aspect-square pb-full">
+        <div className="w-[75px] h-[75px]  flex items-center justify-between space-x-6 aspect-square pb-full">
           <Preview parts={[ImageData.images.bodies[0]]} />
         </div>
-        <div className="aspect-square w-[75px] h-[75px] flex items-center justify-between p-6 space-x-6">
-          2
+        <div className="aspect-square w-[75px] h-[75px] flex items-center justify-between space-x-6">
+          <Preview parts={[ImageData.images.bodies[1]]} />
         </div>
-        <div className="aspect-square w-[75px] h-[75px] flex items-center justify-between p-6 space-x-6">
-          3
+        <div className="aspect-square w-[75px] h-[75px] flex items-center justify-between space-x-6">
+          <Preview parts={[ImageData.images.bodies[2]]} />
         </div>
-        <div className="w-[75px] h-[75px] flex items-center justify-between p-6 space-x-6">
-          4
+        <div className="w-[75px] h-[75px] flex items-center justify-between  space-x-6">
+          <Preview parts={[ImageData.images.bodies[3]]} />
         </div>
       </div>
     </div>
@@ -85,7 +85,7 @@ export const CardSelect = ({ assets, children }) => {
 
 const Preview = ({ parts }) => {
   const { bgcolors, palette } = ImageData;
-  const svg = buildSVG(parts, palette, 'fff')
+  const svg = buildSVG(parts, palette, 'ffffff00')
   const encodedSvgData = `data:image/svg+xml;base64,${btoa(svg)}`
   return <img src={encodedSvgData} />
 }
@@ -132,7 +132,7 @@ const CreatorForm = () => {
   const createPFPContract = (bodies, heads, name) => {
 
     contract.on('PFPCollectionCreated', (event) => {
-      router.push(`/pfp/${ event }`)
+      router.push(`/pfp/${event}`)
     })
     send("PFPNative",
       name,
@@ -183,6 +183,12 @@ const CreatorForm = () => {
       </label>
       <CardLabel>Body Collections</CardLabel>
       <CardSelect label={'Body Collections'} />
+      <Input
+        name="mintPrice"
+        label="mintPrice"
+        placeholder="0.1"
+        register={register}
+      />
       < button
         type="submit"
         className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
