@@ -206,10 +206,17 @@ const CreatorForm = ({ onSelectedBodies = () => { }, onSelectedHeads = () => { }
     createPFPContract(bodies, heads, data.communityName, price)
   };
 
-  const bodiesA = ImageData.images.bodies.slice(0, 4)
-  const bodiesB = ImageData.images.bodies.slice(5, 8)
-  const headsA = ImageData.images.heads.slice(0, 4)
-  const headsB = ImageData.images.heads.slice(5, 9)
+  console.log(ImageData.images.heads)
+
+  const bodiesARange = '0,11'
+  const bodiesBRange = '11,15'
+  const headsARange = '0,10'
+  const headsBRange = '10,15'
+
+  const bodiesA = ImageData.images.bodies.slice(...bodiesARange.split(',')).slice(0, 4)
+  const bodiesB = ImageData.images.bodies.slice(...bodiesBRange.split(',')).slice(0, 4)
+  const headsA = ImageData.images.heads.slice(...headsARange.split(',')).slice(0, 4)
+  const headsB = ImageData.images.heads.slice(...headsBRange.split(',')).slice(0, 4)
 
   return (
     <form
@@ -239,13 +246,13 @@ const CreatorForm = ({ onSelectedBodies = () => { }, onSelectedHeads = () => { }
       <div className='flex'>
         <label htmlFor="heads-0">
           <CardSelect assets={headsA} >
-            <input className="sr-only peer" type="radio" value={[0, 4]} {...register('heads',)} id="heads-0" />
+            <input className="sr-only peer" type="radio" value={headsARange} {...register('heads',)} id="heads-0" />
           </CardSelect>
         </label>
 
         <label htmlFor="heads-1">
           <CardSelect assets={headsB} >
-            <input className="sr-only peer" type="radio" value={[5, 9]} {...register('heads',)} id="heads-1" />
+            <input className="sr-only peer" type="radio" value={headsBRange} {...register('heads',)} id="heads-1" />
           </CardSelect>
         </label>
       </div>
@@ -254,12 +261,12 @@ const CreatorForm = ({ onSelectedBodies = () => { }, onSelectedHeads = () => { }
       <div className='flex'>
         <label htmlFor="bodies-1">
           <CardSelect assets={bodiesA} >
-            <input className="sr-only peer" type="radio" value={[0, 4]} {...register('bodies',)} id="bodies-1" />
+            <input className="sr-only peer" type="radio" value={bodiesARange} {...register('bodies',)} id="bodies-1" />
           </CardSelect>
         </label>
         <label htmlFor="bodies-2">
           <CardSelect assets={bodiesB} >
-            <input className="sr-only peer" type="radio" value={[5, 8]} {...register('bodies',)} id="bodies-2" />
+            <input className="sr-only peer" type="radio" value={bodiesBRange} {...register('bodies',)} id="bodies-2" />
           </CardSelect>
         </label>
       </div>
