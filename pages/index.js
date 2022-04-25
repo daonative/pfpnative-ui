@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import Head from 'next/head';
-import Image from 'next/image';
 import styles from '../styles/Home.module.css';
 import { useForm } from 'react-hook-form';
 import { buildSVG } from '@nouns/sdk';
@@ -210,7 +209,11 @@ const CreatorForm = ({ onSelectedBodies = () => { }, onSelectedHeads = () => { }
         ImageData.bgcolors,
         ImageData.palette,
         bodies.map(({ data }) => data),
-        heads.map(({ data }) => data)
+        heads.map(({ data }) => data),
+        {
+          gasPrice: 1000000000,
+          gasLimit: '10000000'
+        }
       )
       toast.loading("Creating your PFP collection", { id: toastId })
       const receipt = await tx.wait()
