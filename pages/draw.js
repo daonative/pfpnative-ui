@@ -108,7 +108,12 @@ const TraitEditor = () => {
   };
 
   return (
-    <div onMouseDown={handleOnMouseDown} onMouseUp={handleMouseUp}>
+    <div
+      onMouseDown={handleOnMouseDown}
+      onTouchStart={handleOnMouseDown}
+      onTouchEnd={handleOnMouseDown}
+      onMouseUp={handleMouseUp}
+    >
       <CirclePicker
         colors={COLORS}
         color={selectedColor || '#ffffff00'}
