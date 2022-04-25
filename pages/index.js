@@ -6,15 +6,13 @@ import { useForm } from 'react-hook-form';
 import { buildSVG } from '@nouns/sdk';
 import ImageData from "../assets/image-data.json";
 
-import { useEtherBalance, useEthers, Config, useContractFunction } from '@usedapp/core';
+import { useEthers } from '@usedapp/core';
 
-import { formatEther } from '@ethersproject/units';
 import { creatorAbi } from '../abi';
-import { Contract, utils } from 'ethers'
+import { ethers, Contract, utils } from 'ethers'
 import { useRouter } from 'next/router';
 import toast from 'react-hot-toast';
 import WalletConnectProvider from '@walletconnect/web3-provider';
-import HeaderNavigation from '../component/HeaderNav';
 
 
 export const Input = ({ name, register, required, placeholder, className }) => {
@@ -163,7 +161,6 @@ const CreatorForm = ({ onSelectedBodies = () => { }, onSelectedHeads = () => { }
 
   const contract = new Contract('0xbc578FeC851a2A5195A3D5407e832E769BE8E1E1', creatorAbi, library.getSigner())
   const { register, handleSubmit, watch } = useForm();
-  const { state, send } = useContractFunction(contract, 'createPFPCollection', { transactionName: 'createPFPCollection' })
 
   const selectedBodyRange = watch('bodies')
   const selectedHeadRange = watch('heads')
@@ -180,22 +177,52 @@ const CreatorForm = ({ onSelectedBodies = () => { }, onSelectedHeads = () => { }
     onSelectedHeads(selectedHeads)
   }, [selectedHeadRange, onSelectedHeads])
 
-  const createPFPContract = (bodies, heads, name, price) => {
-    const toastId = toast.loading("Creating your PFP collection")
-    contract.on('PFPCollectionCreated', async (event) => {
+  const getPFPContractFromTxReceipt = (txReceipt) => {
+    const creatorInterface = new utils.Interface(creatorAbi)
+    return txReceipt.logs
+      // Parse log events
+      .map((log) => {
+        try {
+          return creatorInterface.parseLog(log)
+        } catch (e) {
+          return undefined
+        }
+      })
+      // Get rid of the unknown events
+      .filter((event) => event !== undefined)
+      // Keep only PFPCollectionCreated events
+      .filter((event) => event.name === "PFPCollectionCreated")
+      // Take the first argument which is the collection address
+      .map((event) => event.args[0])
+      // Take the first id (there is only one)
+      .shift()
+  }
+
+  const createPFPContract = async (bodies, heads, name, price) => {
+    const toastId = toast.loading("Waiting for transaction signature...")
+    try {
+      const contract = new ethers.Contract('0xbc578FeC851a2A5195A3D5407e832E769BE8E1E1', creatorAbi, library.getSigner())
+      const tx = await contract.createPFPCollection(
+        "PFPnative",
+        name,
+        // add different mint price
+        price,
+        ImageData.bgcolors,
+        ImageData.palette,
+        bodies.map(({ data }) => data),
+        heads.map(({ data }) => data)
+      )
+      toast.loading("Creating your PFP collection", { id: toastId })
+      const receipt = await tx.wait()
       await new Promise(r => setTimeout(r, 2000));
-      toast.success("Created your PFP!", { id: toastId })
-      router.push(`/pfp/${event}`)
-    })
-    send("PFPNative",
-      name,
-      // add different mint price
-      price,
-      ImageData.bgcolors,
-      ImageData.palette,
-      bodies.map(({ data }) => data),
-      heads.map(({ data }) => data)
-    )
+      const collectionAddress = getPFPContractFromTxReceipt(receipt)
+      await router.push(`/pfp/${collectionAddress}`)
+      toast.success("Created your PFP collection!", { id: toastId })
+    } catch (e) {
+      const message = e?.data?.message || e?.error?.message || e.message
+      toast.error("Failed create your PFP collection", { id: toastId })
+      toast.error(message)
+    }
   }
   const onSubmit = data => {
     console.log(data)
